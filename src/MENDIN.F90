@@ -181,9 +181,9 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
 
  
       !!define file units
-      sPAR_SCE%iFout1 = 11
-      sPAR_SCE%iFout2 = 12
-      sPAR_SCE%iFout3 = 13
+      sPAR_SCE%iFout_all = 11
+      sPAR_SCE%iFout_end = 12
+      sPAR_SCE%iFout_ini = 13
       sINI%iFout_SIM_obs_cases    = 14
       
       !!3 output files for model optimization
@@ -192,11 +192,11 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
       CALL system('mkdir '//sINI%dirout)
       sINI%dirout = trim(sINI%dirout)//"/"
       sfilename_full = trim(sINI%dirout)//"OPT_all.out"
-      open(unit=sPAR_SCE%iFout1,file=sfilename_full,status='unknown')
+      open(unit=sPAR_SCE%iFout_all,file=sfilename_full,status='unknown')
       sfilename_full = trim(sINI%dirout)//"OPT_end.out"
-      open(unit=sPAR_SCE%iFout2,file=sfilename_full,status='unknown')
+      open(unit=sPAR_SCE%iFout_end,file=sfilename_full,status='unknown')
       sfilename_full = trim(sINI%dirout)//"OPT_ini.out"
-      open(unit=sPAR_SCE%iFout3,file=sfilename_full,status='unknown')
+      open(unit=sPAR_SCE%iFout_ini,file=sfilename_full,status='unknown')
       !!output files for response variables
       !!--------------------------------------------------------------------------
 !      sfilename_full = trim(sINI%dirout)//'SIM_obs.out'
@@ -204,7 +204,7 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
 !      write(sINI%iFout_SIM_obs_cases,*)"SIMULATION vs. OBSERVATION for ALL CASES: "
 !      write(sINI%iFout_SIM_obs_cases,'(2a5,a15,3a20)')"ID","VAR","Date","OBS_avg","SIM_avg","SIM_sd"
       !!--------------------------------------------------------------------------
-      write(sPAR_SCE%iFout3,700)
+      write(sPAR_SCE%iFout_ini,700)
   700 format(10x,'SHUFFLED COMPLEX EVOLUTION GLOBAL OPTIMIZATION',&
      &       /,10x,46(1h=))
      
@@ -216,14 +216,14 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
       
 !c  CHECK IF THE SCE CONTROL PARAMETERS ARE VALID
       if (sPAR_SCE%ngs .lt. 1 .or. sPAR_SCE%ngs .ge. 1320) then
-        write(sPAR_SCE%iFout3,900) sPAR_SCE%ngs
+        write(sPAR_SCE%iFout_ini,900) sPAR_SCE%ngs
   900   format(//,1x,'**ERROR** NUMBER OF COMPLEXES IN INITIAL ',&
      &         ' POPULATION ',i5,' IS NOT A VALID CHOICE')
         ierror = ierror + 1
       end if
 
       if (sPAR_SCE%kstop .lt. 0 .or. sPAR_SCE%kstop .ge. 20) then
-        write(sPAR_SCE%iFout3,901) sPAR_SCE%kstop
+        write(sPAR_SCE%iFout_ini,901) sPAR_SCE%kstop
   901   format(//,1x,'**WARNING** THE NUMBER OF SHUFFLING LOOPS IN',&
      &  ' WHICH THE CRITERION VALUE MUST CHANGE ',/,13x,'SHOULD BE',&
      &  ' GREATER THAN 0 AND LESS THAN 10.  ','kstop = ',i2,&
@@ -233,7 +233,7 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
       end if
 
       if (sPAR_SCE%mings .lt. 1 .or. sPAR_SCE%mings .gt. sPAR_SCE%ngs) then
-        write(sPAR_SCE%iFout3,902) sPAR_SCE%mings
+        write(sPAR_SCE%iFout_ini,902) sPAR_SCE%mings
   902   format(//,1x,'**WARNING** THE MINIMUM NUMBER OF COMPLEXES ',&
      &         i2,' IS NOT A VALID CHOICE. SET IT TO DEFAULT')
         iwarn = iwarn + 1
@@ -241,7 +241,7 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
       end if
 
       if (sPAR_SCE%npg .lt. 2 .or. sPAR_SCE%npg .gt. 1320/max(sPAR_SCE%ngs,1)) then
-        write(sPAR_SCE%iFout3,903) sPAR_SCE%npg
+        write(sPAR_SCE%iFout_ini,903) sPAR_SCE%npg
   903   format(//,1x,'**WARNING** THE NUMBER OF POINTS IN A COMPLEX ',&
      &         I4,' IS NOT A VALID CHOICE, SET IT TO DEFAULT')
         iwarn = iwarn + 1
@@ -249,7 +249,7 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
       end if
 
       if (sPAR_SCE%nps.lt.2 .or. sPAR_SCE%nps.gt.sPAR_SCE%npg .or. sPAR_SCE%nps.gt.50) then
-        write(sPAR_SCE%iFout3,904) sPAR_SCE%nps
+        write(sPAR_SCE%iFout_ini,904) sPAR_SCE%nps
   904   format(//,1x,'**WARNING** THE NUMBER OF POINTS IN A SUB-',&
      &  'COMPLEX ',i4,' IS NOT A VALID CHOICE, SET IT TO DEFAULT')
         iwarn = iwarn + 1
@@ -257,7 +257,7 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
       end if
 
       if (sPAR_SCE%nspl .lt. 1) then
-        write(sPAR_SCE%iFout3,905) sPAR_SCE%nspl
+        write(sPAR_SCE%iFout_ini,905) sPAR_SCE%nspl
   905   format(//,1x,'**WARNING** THE NUMBER OF EVOLUTION STEPS ',&
      &         'TAKEN IN EACH COMPLEX BEFORE SHUFFLING ',I4,/,13x,&
      &         'IS NOT A VALID CHOICE, SET IT TO DEFAULT')
@@ -269,7 +269,7 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
       sPAR_SCE%npt = sPAR_SCE%ngs * sPAR_SCE%npg
 
       if (sPAR_SCE%npt .gt. 1320) then
-        write(sPAR_SCE%iFout3,906) sPAR_SCE%npt
+        write(sPAR_SCE%iFout_ini,906) sPAR_SCE%npt
   906   format(//,1x,'**WARNING** THE NUMBER OF POINTS IN INITIAL ',&
      &         'POPULATION ',i5,' EXCEED THE POPULATION LIMIT,',/,13x,&
      &         'SET NGS TO 2, AND NPG, NPS AND NSPL TO DEFAULTS')
@@ -281,10 +281,10 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
       end if
 
 !c  PRINT OUT THE TOTAL NUMBER OF ERROR AND WARNING MESSAGES
-      if (ierror .ge. 1) write(sPAR_SCE%iFout1,907) ierror
+      if (ierror .ge. 1) write(sPAR_SCE%iFout_all,907) ierror
   907 format(//,1x,'*** TOTAL NUMBER OF ERROR MESSAGES IS ',i2)
 
-      if (iwarn .ge. 1) write(sPAR_SCE%iFout1,908) iwarn
+      if (iwarn .ge. 1) write(sPAR_SCE%iFout_all,908) iwarn
   908 format(//,1x,'*** TOTAL NUMBER OF WARNING MESSAGES IS ',i2)
 
       if (sPAR_SCE%mings .lt. sPAR_SCE%ngs) then
@@ -301,38 +301,38 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
 
 
 !c  PRINT SHUFFLED COMPLEX EVOLUTION OPTIMIZATION OPTIONS
-  104 write(sPAR_SCE%iFout3,910)
+  104 write(sPAR_SCE%iFout_ini,910)
   910 format(//,2x,'SCE CONTROL',5x,'MAX TRIALS',5x,&
      &'REQUIRED IMPROVEMENT',5x,'RANDOM',/,3x,'PARAMETER',8x,&
      &'ALLOWED',6x,'PERCENT',4x,'NO. LOOPS',6x,'SEED',/,&
      &2x,11(1h-),5x,10(1H-),5x,7(1h-),4x,9(1h-),5x,6(1h-))
 
       pcenta=sPAR_SCE%pcento*100.
-      write(sPAR_SCE%iFout3,912) pcntrl,sPAR_SCE%maxn,pcenta,sPAR_SCE%kstop,sPAR_SCE%iseed
+      write(sPAR_SCE%iFout_ini,912) pcntrl,sPAR_SCE%maxn,pcenta,sPAR_SCE%kstop,sPAR_SCE%iseed
   912 format(3x,a10,7x,i5,10x,f3.1,9x,i2,9x,i5)
-      write(sPAR_SCE%iFout3,914) sPAR_SCE%ngs,sPAR_SCE%npg,sPAR_SCE%npt,sPAR_SCE%nps,sPAR_SCE%nspl
+      write(sPAR_SCE%iFout_ini,914) sPAR_SCE%ngs,sPAR_SCE%npg,sPAR_SCE%npt,sPAR_SCE%nps,sPAR_SCE%nspl
   914 format(//,18x,'SCE ALGORITHM CONTROL PARAMETERS',/,18x,32(1H=),&
      &//,2x,'NUMBER OF',5x,'POINTS PER',5x,'POINTS IN',6x,'POINTS PER',&
      &4x,'EVOL. STEPS',/,2x,'COMPLEXES',6X,'COMPLEX',6x,'INI. POPUL.',&
      &5x,'SUB-COMPLX',4x,'PER COMPLEX',/,2x,9(1h-),5x,10(1h-),4x,&
      &11(1h-),5x,10(1h-),4x,11(1h-),5x,/,2x,5(i5,10x))
-      write(sPAR_SCE%iFout3,915) reduc,sPAR_SCE%mings,initl
+      write(sPAR_SCE%iFout_ini,915) reduc,sPAR_SCE%mings,initl
   915 format(//,15x,'COMPLX NO.',5x,'MIN COMPLEX',5x,'INI. POINT',/,&
      &15x,'REDUCTION',6x,'NO. ALLOWED',6x,'INCLUDED',/,&
      &15x,10(1h-),5x,11(1h-),5x,10(1h-),/,18x,a4,6x,i8,13x,a4)
-      write(sPAR_SCE%iFout3,916)
+      write(sPAR_SCE%iFout_ini,916)
   916 format(//,8x,'INITIAL PARAMETER VALUES AND PARAMETER BOUNDS',/,&
      &       8x,45(1h=),//,2x,'PARAMETER',5x,'INITIAL VALUE',5x,&
      &       'LOWER BOUND',5x,'UPPER BOUND',6x,'OPT-Y/N',/,2x,9(1h-),5x,13(1h-),5x,&
      &       11(1h-),5x,11(1h-),5x,11(1h-))
      
       do 920 i = 1, sPAR_SCE%nPar
-        write(sPAR_SCE%iFout3,918) sPAR_SCE%parName(i),sPAR_SCE%a(i),sPAR_SCE%bl(i),sPAR_SCE%bu(i),iPar_opt(i)
+        write(sPAR_SCE%iFout_ini,918) sPAR_SCE%parName(i),sPAR_SCE%a(i),sPAR_SCE%bl(i),sPAR_SCE%bu(i),iPar_opt(i)
   920 continue
   918   format(a10,4x,(3x,f12.6),2(4x,f12.6),5x,I10)
   
       if (ierror .ge. 1) then
-      write(sPAR_SCE%iFout3,922)
+      write(sPAR_SCE%iFout_ini,922)
   922 format(//,'*** THE OPTIMIZATION SEARCH IS NOT CONDUCTED BECAUSE',&
      &       ' OF INPUT DATA ERROR ***')
       stop

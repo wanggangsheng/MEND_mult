@@ -226,7 +226,7 @@ REAL(8) function fMEND_OBJ(xx, sPAR, sINI, sOUT)
     INTEGER iRead
     REAL(8) rRead
     CHARACTER(LEN = 10) sRead
-    CHARACTER(LEN = 200) format510,format521, dirout
+    CHARACTER(LEN = 200) format510,format521,format101, dirout
     CHARACTER(LEN = 200) sFile_inp
     INTEGER, ALLOCATABLE :: VARid(:)
     INTEGER, ALLOCATABLE :: VARid_unique(:,:)
@@ -334,12 +334,13 @@ REAL(8) function fMEND_OBJ(xx, sPAR, sINI, sOUT)
     REWIND(unit = sINI%iFout_SIM_obs_cases)
     read(sINI%iFout_SIM_obs_cases,*)sRead
     read(sINI%iFout_SIM_obs_cases,*)sRead
-    k = 0
+    k = 0  !! total # of observations from all cases
     read(sINI%iFout_SIM_obs_cases,*,iostat=eof)sRead !!Line-3: 1st data
     do while (eof.ge.0) 
         k = k + 1
         read(sINI%iFout_SIM_obs_cases,*,iostat=eof)sRead
-    end do             
+    end do    
+
 !    close(sINI%iFout_SIM_obs_cases)
     
     !!(2) assign values for dOBS, dSIM
@@ -358,6 +359,12 @@ REAL(8) function fMEND_OBJ(xx, sPAR, sINI, sOUT)
         read(sINI%iFout_SIM_obs_cases,*)iRead, VARid(i), sRead, dOBS_SIM(i,1:2),rRead
     end do
     close(sINI%iFout_SIM_obs_cases)
+    
+    if (sINI%iModel.eq.3) then
+        write(format101, *) "(", k, "E15.3)"
+!        print*,format101
+        write(sINI%iFout_UQvar, format101)dOBS_SIM(:,2)  
+    end if
     
     rVARid = DBLE(VARid)  !!convert to real(8) for sorting
     call sort(k,2,dOBS_SIM,rVARid)

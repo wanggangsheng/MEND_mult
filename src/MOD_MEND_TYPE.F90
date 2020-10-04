@@ -211,6 +211,9 @@ MODULE MOD_MEND_TYPE
          INTEGER iFout_RATE_hour                        !file unit for derived rates, e.g., 1st-order decomposition rate, active fraction, phi
          INTEGER iFout_ITW_hour                         !file unit for Input (e.g., litter), Temperature, Water content & potential 
          INTEGER iFout_PAR_hour                         !file unit for hourly parameters modified by Temperature, Water potential, and other factors 
+         
+         INTEGER iFout_UQvar                            !file unit for response variables in COFI uncertainty
+         
          REAL(8) r0                                     !initial active-microbe fraction
          REAL(8) LCI0                                   !initial lignocellulose index = Lignin/(Lignin+Cellulose)!file unit for output
          REAL(8) soilDepth                              ![cm],soil depth

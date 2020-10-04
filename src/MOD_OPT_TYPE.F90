@@ -23,9 +23,9 @@ MODULE MOD_OPT_TYPE
         INTEGER iniflg                                  !flag on whether to include the initial point in population; = 0, not included;  = 1, included
         INTEGER iprint                                  !flag for controlling print-out after each shuffling loop;= 0, print information on the best point of the population; = 1, print information on every point of the population
         INTEGER iseed                                   !random seed
-        INTEGER iFout1                                  !output file1: print the results of SCEUA
-        INTEGER iFout2                                  !output file2: summarize optimal parameter values from nRun
-        INTEGER iFout3                                  !output file3: other text output
+        INTEGER iFout_all                                  !output file1: print the results of SCEUA
+        INTEGER iFout_end                                  !output file2: summarize optimal parameter values from nRun
+        INTEGER iFout_ini                                  !output file3: other text output
         REAL(8) pcento                                  !percentage by which the criterion value must change in given number of shuffling loops
         REAL(8) bestObj                                 !best objective function value
         INTEGER, allocatable:: iOpt(:)                  !index of optimized parameters

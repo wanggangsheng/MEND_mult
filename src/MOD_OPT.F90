@@ -146,7 +146,7 @@ SUBROUTINE SCEUA(sPAR_SCE, sPAR, sINI, sOUT)
       REAL(8) s(sPAR_SCE%nps,sPAR_SCE%nPar),sf(sPAR_SCE%nps)  
       INTEGER lcs(sPAR_SCE%nps) !!lcs(50)                     
       
-      CHARACTER*256 format510,format520,format521, format610,format630,format660
+      CHARACTER*256 format510,format520,format521, format610,format630,format660,format650
       
      
       write (*,*) '>>ENTER SUBROUTINE <SCEUA>'
@@ -180,7 +180,9 @@ SUBROUTINE SCEUA(sPAR_SCE, sPAR, sINI, sOUT)
       write(format610,*)"(/,1x,'LOOP',1x,'TRIALS',1x,'COMPLXS',2x,",&
      &       "'BESTF',3x,'WORSTF',3x,'PAR-RNG',1x,",nPar,"(a10))"
       write(format630,*)"(i5,1x,i5,3x,i5,3g10.3,",nPar,"(f10.4))"
-      write(format660,*)"(15x,g10.3,20x,",nPar,"(e10.3))"    
+!      write(format660,*)"(15x,g10.3,20x,",nPar,"(e10.3))" 
+      write(format660,*)"(g10.3,",nPar,"(f15.8))"  
+      write(format650,*)"(/a10,",nPar,"(a15))"
 
 !c  INITIALIZE VARIABLES
       
@@ -197,8 +199,10 @@ SUBROUTINE SCEUA(sPAR_SCE, sPAR, sINI, sOUT)
       ngs1 = ngs
       npt1 = npt
 
-      write(sPAR_SCE%iFout3,400)
+      write(sPAR_SCE%iFout_ini,400)
       write (*,*) ' *  Evolution Loop # ',nloop
+      
+      write(sPAR_SCE%iFout_all,format650)'fOBJ',sPAR_SCE%parName
 
 !c  COMPUTE THE BOUND FOR PARAMETERS BEING OPTIMIZED
       do j = 1, nPar
@@ -213,9 +217,9 @@ SUBROUTINE SCEUA(sPAR_SCE, sPAR, sINI, sOUT)
       fa = fMEND_OBJ(a, sPAR, sINI, sOUT)
 
 !c  PRINT THE INITIAL POINT AND ITS CRITERION VALUE
-      write(sPAR_SCE%iFout3,500)
-      write(sPAR_SCE%iFout3,format510) sPAR_SCE%parName!(xname(j),j=1,nPar)
-      write(sPAR_SCE%iFout3,format520) fa,a !(a(j),j=1,nPar)
+      write(sPAR_SCE%iFout_ini,500)
+      write(sPAR_SCE%iFout_ini,format510) sPAR_SCE%parName!(xname(j),j=1,nPar)
+      write(sPAR_SCE%iFout_ini,format520) fa,a !(a(j),j=1,nPar)
       
 !c  GENERATE AN INITIAL SET OF npt1 POINTS IN THE PARAMETER SPACE
 !c  IF iniflg IS EQUAL TO 1, SET x(1,.) TO INITIAL POINT a(.)
@@ -270,15 +274,15 @@ SUBROUTINE SCEUA(sPAR_SCE, sPAR, sINI, sOUT)
       call parstt(nPar,nOpt,iOpt,npt1,x,xnstd,bound,gnrng,ipcnvg)
 
 !c  PRINT THE RESULTS FOR THE INITIAL POPULATION
-      write(sPAR_SCE%iFout3,600)
-      write(sPAR_SCE%iFout1,format610) sPAR_SCE%parName !(xname(j),j=1,nopt)
-      write(sPAR_SCE%iFout1,format630) nloop,icall,ngs1,bestf,worstf,gnrng,&
+      write(sPAR_SCE%iFout_ini,600)
+      write(sPAR_SCE%iFout_ini,format610) sPAR_SCE%parName !(xname(j),j=1,nopt)
+      write(sPAR_SCE%iFout_ini,format630) nloop,icall,ngs1,bestf,worstf,gnrng,&
      &               (bestx(j),j=1,nPar)
 
       if (iprint .eq. 1) then
-        write(sPAR_SCE%iFout1,650) nloop
+!        write(sPAR_SCE%iFout_all,650) nloop
         do i = 1, npt1
-          write(sPAR_SCE%iFout1,format660) xf(i),(x(i,j),j=1,nPar)
+          write(sPAR_SCE%iFout_all,format660) xf(i),(x(i,j),j=1,nPar)
         end do
 
       end if
@@ -374,16 +378,16 @@ SUBROUTINE SCEUA(sPAR_SCE, sPAR, sINI, sOUT)
       call parstt(nPar,nOpt,iOpt,npt1,x,xnstd,bound,gnrng,ipcnvg)
 
 !c  PRINT THE RESULTS FOR CURRENT POPULATION
-      if (mod(nloop,5) .ne. 0) go to 501
-      write(sPAR_SCE%iFout1,format610) sPAR_SCE%parName!(xname(j),j=1,nopt)
-  501 continue
-      write(sPAR_SCE%iFout1,format630) nloop,icall,ngs1,bestf,worstf,gnrng,&
+!      if (mod(nloop,5) .ne. 0) go to 501
+!      write(sPAR_SCE%iFout_all,format610) sPAR_SCE%parName!(xname(j),j=1,nopt)
+!  501 continue
+      write(sPAR_SCE%iFout_ini,format630) nloop,icall,ngs1,bestf,worstf,gnrng,&
      &               (bestx(j),j=1,nPar)
 
       if (iprint .eq. 1) then
-        write(sPAR_SCE%iFout1,650) nloop
+!        write(sPAR_SCE%iFout_all,650) nloop
         do i = 1, npt1
-          write(sPAR_SCE%iFout1,format660) xf(i),(x(i,j),j=1,nPar)
+          write(sPAR_SCE%iFout_all,format660) xf(i),(x(i,j),j=1,nPar)
         end do
       end if
 
@@ -422,22 +426,22 @@ SUBROUTINE SCEUA(sPAR_SCE, sPAR, sINI, sOUT)
 
 !c  SEARCH TERMINATED
  9000 continue
-      write(sPAR_SCE%iFout3,800) maxn,loop,igs,nloop
+      write(sPAR_SCE%iFout_ini,800) maxn,loop,igs,nloop
       go to 9999
  9100 continue
-      write(sPAR_SCE%iFout3,810) pcento*100.,kstop
+      write(sPAR_SCE%iFout_ini,810) pcento*100.,kstop
       go to 9999
- 9200 write(sPAR_SCE%iFout3,820) gnrng*100.
+ 9200 write(sPAR_SCE%iFout_ini,820) gnrng*100.
  9999 continue
 
 !c  PRINT THE FINAL PARAMETER ESTIMATE AND ITS FUNCTION VALUE
-      write(sPAR_SCE%iFout3,830)
-      write(sPAR_SCE%iFout3,format510) sPAR_SCE%parName
-      write(sPAR_SCE%iFout3,format520) bestf,bestx  !!(bestx(j),j=1,nPar)
+      write(sPAR_SCE%iFout_ini,830)
+      write(sPAR_SCE%iFout_ini,format510) sPAR_SCE%parName
+      write(sPAR_SCE%iFout_ini,format520) bestf,bestx  !!(bestx(j),j=1,nPar)
       
       fObj = fMEND_OBJ(bestx, sPAR, sINI, sOUT)
       write(format521,*)"(",nPar,"f12.6,","' | '",",f10.4,",sINI%nVARopt_cases,"f10.4)"
-      write(sPAR_SCE%iFout2,format521) bestx,fobj,sINI%rOBJ_cases(1:sINI%nVARopt_cases)!!(bestx(j),j=1,nPar)
+      write(sPAR_SCE%iFout_end,format521) bestx,fobj,sINI%rOBJ_cases(1:sINI%nVARopt_cases)!!(bestx(j),j=1,nPar)
       write(*,format521) bestx,fobj,sINI%rOBJ_cases(1:sINI%nVARopt_cases) !!(bestx(j),j=1,nPar)
       
       sPAR_SCE%bestObj = bestf
