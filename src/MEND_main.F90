@@ -110,9 +110,9 @@ USE MOD_USRFS, ONLY: Sec2HMS, nMonsbwDates
         iFvar    = 303            !File to store response variable outputs from sensitivity/uncertainty analysis
         sINI%iFout_UQvar = iFvar
         
-        open(unit = iFpar, file = trim(sINI%dirinp)//'/UQpar.dat', status = 'old')
-        open(unit = iFpar_UQ, file = trim(sINI%dirout)//'UQpar.out', status = 'unknown')
-        open(unit = iFvar, file = trim(sINI%dirout)//'UQvar.out', status = 'unknown')
+        open(unit = iFpar, file = trim(sINI%dirinp)//'/COFIpar.dat', status = 'old')
+        open(unit = iFpar_UQ, file = trim(sINI%dirout)//'COFIpar.out', status = 'unknown')
+        open(unit = iFvar, file = trim(sINI%dirout)//'COFIvar.out', status = 'unknown')
         
 !        write(format101, *) "(", sINI%nOBS_tot, "E15.3)"
                         
@@ -136,7 +136,7 @@ USE MOD_USRFS, ONLY: Sec2HMS, nMonsbwDates
                     fObj = fObj0
                     if (sINI%iModel.eq.3) then
                         fObj = fMEND_OBJ(xx, sPAR, sINI, sOUT)
-!                        write(iFvar, format101)sINI%dSIM_opt(:,2)  
+!                        write(iFvar, format101)sINI%dSIM_opt(:,2)  !! write output in fMEND_OBJ
                     end if
                     write(*,'(A5,I6,A1,2f20.4)')"fObj[",j,"]",fObj0,fObj
                     write(iFpar_UQ, '(f10.4,50f15.8)')fObj,xx

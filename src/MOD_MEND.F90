@@ -362,7 +362,6 @@ REAL(8) function fMEND_OBJ(xx, sPAR, sINI, sOUT)
     
     if (sINI%iModel.eq.3) then
         write(format101, *) "(", k, "E15.3)"
-!        print*,format101
         write(sINI%iFout_UQvar, format101)dOBS_SIM(:,2)  
     end if
     
